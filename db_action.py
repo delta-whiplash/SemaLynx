@@ -21,7 +21,8 @@ class SemaBox:
             'name': self.name,
             'ip': self.ip,
             'connected': self.connected,
-            'lastCheck': self.lastCheck.strftime("%Y-%m-%d %H:%M:%S")
+            'lastCheck': self.lastCheck.strftime("%Y-%m-%d %H:%M:%S"),
+            'version': self.version
         }
 
 class SemaBoxDB:
