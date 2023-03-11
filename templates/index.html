@@ -25,6 +25,12 @@
 					<i class="fa fa-money" aria-hidden="true"></i><br>
 					<p>SemaBox Connecté</p>
 					<div id="semabox-connected">
+						<table id="semabox-connected_table">
+							<tr>
+								<th>Name</th>
+								<th>IP</th>
+							</tr>
+						</table>
 					</div>
 				</div>
 			</div>
@@ -34,10 +40,106 @@
 				<div class="icon-section">
 					<i class="fa fa-money" aria-hidden="true"></i><br>
 					<p>SemaBox Déconnecté</p>
-					<div id="semabox-connected">
+					<div id="semabox-disconnected">
+						<table id="semabox-disconnected_table">
+							<tr>
+								<th>Name</th>
+								<th>IP</th>
+							</tr>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div id="myModal" class="modal">
+		<div class="modal-content" id="modal-content">
+			<span class="close" >&times;</span>
+		</div>
+	</div>
+	<script>
+		const HTMLSemaboxConnectedDiv = document.getElementById("semabox-connected");
+		const HTMLSemaboxDisconnectedDiv = document.getElementById("semabox-disconnected");
+
+		const HTMLSemaboxConnectedTable = document.getElementById("semabox-connected_table");
+		const HTMLSemaboxDisconnectedTable = document.getElementById("semabox-disconnected_table");
+
+		function PageLoaded() {
+			console.log("Page Loaded");
+			UpdateSemaboxList();
+		}
+
+
+		function UpdateSemaboxList() {
+			console.log("Update Semabox List");
+
+			var semaboxList = APISemaboxGetAll();
+
+			var semaboxConnectedTable = "<tr><th>Name</th><th>IP</th></tr>";
+			var semaboxDisconnectedTable = "<tr><th>Name</th><th>IP</th></tr>";
+
+			for (var i = 0; i < semaboxList.length; i++) {
+				var semabox = semaboxList[i];
+				var semaboxName = semabox.name;
+				var semaboxIP = semabox.ip;
+				var semaboxConnected = semabox.connected;
+				var semaboxVersion = semabox.version;
+
+				if (semaboxConnected) {
+					semaboxConnectedTable += "<tr onclick=\"OpenModal('" + semaboxName + "','" + semaboxIP + "'," + semaboxConnected + ",'" + semaboxVersion + "')\" ><td>" + semaboxName + "</td><td>" + semaboxIP + "</td></tr>";
+				} else {
+					semaboxDisconnectedTable += "<tr onclick=\"OpenModal('" + semaboxName + "','" + semaboxIP + "'," + semaboxConnected + ",'" + semaboxVersion + "')\" ><td>" + semaboxName + "</td><td>" + semaboxIP + "</td></tr>";
+				}
+			}
+			HTMLSemaboxConnectedTable.innerHTML = semaboxConnectedTable;
+			HTMLSemaboxDisconnectedTable.innerHTML = semaboxDisconnectedTable;
+		}
+		// modal part
+		var modal = document.getElementById("myModal");
+
+		function OpenModal(name, ip, connected, version) {
+
+			var modal = document.getElementById("myModal");
+			var modalContent = document.getElementById("modal-content");
+			if (connected) {
+				connected = "Yes";
+			} else {
+				connected = "No";
+			}
+			
+			modalContentHTML = "<span class=\"close\" onclick=\"CloseModal()\">&times;</span>"
+			modalContentHTML += "<p>Semabox Name: " + name + "</p>"
+			modalContentHTML += "<p>Semabox ip: " + ip + "</p>"
+			modalContentHTML += "<p>Semabox connected: " + connected + "</p>"
+			modalContentHTML += "<p>Semabox version: " + version + "</p>"
+			modalContentHTML += "<a href=\"http://" + ip + ":5000\" target=\"_blank\">Open Semabox</a>"
+			modalContentHTML += "<br><a href=\"http://" + ip + ":5000/reboot\" target=\"_blank\">Reboot Semabox</a>"
+			modal.style.display = "block";
+			modalContent.innerHTML = modalContentHTML;
+		}
+		// When the user clicks on <span> (x), close the modal
+		function CloseModal () {
+			modal.style.display = "none";
+		}
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function (event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+		function RestartVM(ip) {
+			console.log("Restart VM");
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					console.log("Restart VM OK");
+				}
+			};
+			xhttp.open("GET", "http://" + ip + ":5000/restart_vm", false); // false for synchronous request
+			xhttp.send();
+
+		}
+	</script>
 </body>
+
 </html>

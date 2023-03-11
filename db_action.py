@@ -39,7 +39,7 @@ class SemaBoxDB:
         """
         Add a semabox to the database
         """
-        self.db.execute("INSERT INTO semabox (name, ip, connected, lastCheck, version) VALUES (?, ?, ?, ?, ?)", (semabox.name, semabox.ip, semabox.connected, semabox.lastCheck.strftime("%Y-%m-%d %H:%M:%S"), semabox.version))
+        self.db.execute("INSERT INTO semabox (name, ip, connected, version) VALUES (?, ?, ?, ?)", (semabox.name, semabox.ip, semabox.connected, semabox.version))
         return
     
     def getAllSemaBox(self) -> list[SemaBox]:
@@ -47,7 +47,7 @@ class SemaBoxDB:
         get status of all semabox
         """
         result = self.db.execute("SELECT * FROM semabox")
-        return [SemaBox(x[0], x[1], x[2], x[3], datetime.datetime.strptime(x[4], "%Y-%m-%d %H:%M:%S"), x[4]) for x in result]
+        return [SemaBox(x[0], x[1], x[2], x[3], datetime.datetime.strptime(x[4], "%Y-%m-%d %H:%M:%S"), x[5]) for x in result]
 
     def getSemaBox(self, id: int) -> SemaBox:
         """
@@ -68,4 +68,4 @@ class SemaBoxDB:
         get semabox that have not been checked for more than 15 minutes
         """
         result = self.db.execute("SELECT * FROM semabox WHERE lastCheck < datetime('now', '-15 minutes')")
-        return [SemaBox(x[0], x[1], x[2], x[3], datetime.datetime.strptime(x[4], "%Y-%m-%d %H:%M:%S"), x[4]) for x in result]
+        return [SemaBox(x[0], x[1], x[2], x[3], datetime.datetime.strptime(x[4], "%Y-%m-%d %H:%M:%S"), x[5]) for x in result]
