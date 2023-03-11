@@ -1,10 +1,10 @@
 from flask import Flask, render_template, jsonify, request
 import datetime
 
-from .db_action import SemaBox, SemaBoxDB
+from db_action import SemaBox, SemaBoxDB
 
 db: SemaBoxDB = SemaBoxDB("semabox.db") # LA DB
-liste_semabox = ["semabox1", "semabox2", "semabox3"]
+
 app = Flask(__name__)
 # default page
 @app.route('/')
@@ -36,7 +36,7 @@ def getSemabox(semaboxID: str):
     return semabox.dict()
 
 
-@app.route('/api/manage-semabox/getAll', methods=['POST'])
+@app.route('/api/manage-semabox/getAll', methods=['GET'])
 def getAllSemabox():
     semaboxes = db.getAllSemaBox()
     return [x.dict() for x in semaboxes] # Transforme la liste d'objet en liste de dictionnaire
