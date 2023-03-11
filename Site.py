@@ -74,11 +74,13 @@ if __name__ == '__main__':
 def activate_job():
     def run_job():
         for semabox in db.getAfter15mnSemabox():
-            response = requests.get("http://"+semabox.ip+":5000/health")
+            response = requests.get("http://"+semabox.ip+":5000/version")
             if response.status_code == 200:
                 semabox.connected = 1
             else:
                 semabox.connected = 0
+            if semabox.version != response.text:
+                semabox.version = response.text
             db.updateSemaBox(semabox)
 
     schedule.every(15).minutes.do(run_job)
