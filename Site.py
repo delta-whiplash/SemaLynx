@@ -68,13 +68,16 @@ def check_if_still_connected():
     while True :
         for semabox in db.getAfter15mnSemabox():
             print("Check semabox: "+semabox.name)
+            
             response = requests.get("http://"+semabox.ip+":5000/version")
-            if response.status_code == 200:
+            try:
+                response.status_code == 200
                 semabox.connected = 1
-            else:
+                if semabox.version != response.text:
+                    semabox.version = response.text
+            except:
                 semabox.connected = 0
-            if semabox.version != response.text:
-                semabox.version = response.text
+            
             db.updateSemaBox(semabox)
 
         time.sleep(15*60)
