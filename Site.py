@@ -1,9 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 import datetime
-import schedule
 import time
 import requests
-
+import threading
 from db_action import SemaBox, SemaBoxDB
 
 db: SemaBoxDB = SemaBoxDB("semalynx.db") # LA DB
@@ -65,15 +64,10 @@ def updateSemabox():
 def health():
     return jsonify('OK')
 
-
-
-if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0', port=5000)
-    
-@app.before_first_request
-def activate_job():
-    def run_job():
+def check_if_still_connected():
+    while True :
         for semabox in db.getAfter15mnSemabox():
+            print("Check semabox: "+semabox.name)
             response = requests.get("http://"+semabox.ip+":5000/version")
             if response.status_code == 200:
                 semabox.connected = 1
@@ -83,10 +77,14 @@ def activate_job():
                 semabox.version = response.text
             db.updateSemaBox(semabox)
 
-    schedule.every(15).minutes.do(run_job)
+        time.sleep(15*60)
+
+if __name__ == '__main__':
+    # Check if semabox is still connected
+    threading.Thread(target=check_if_still_connected).start()
+    app.run(debug=True,host='0.0.0.0', port=5000)
     
-    # Start the scheduled task
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+   
+
+
 
