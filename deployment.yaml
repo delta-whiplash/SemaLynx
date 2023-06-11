@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: semalynx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: semalynx
+  template:
+    metadata:
+      labels:
+        app: semalynx
+    spec:
+      containers:
+      - name: semalynx-container
+        image: ghcr.io/delta-whiplash/semalynx:master
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: semalynx-service
+spec:
+  selector:
+    app: semalynx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP

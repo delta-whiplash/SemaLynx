@@ -7,4 +7,4 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 # Running the app
-CMD ["python", "app.py"]
+CMD ["python", "Site.py"]
