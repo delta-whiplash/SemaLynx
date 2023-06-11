@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-slim
 # Copying the source code to Working Directory
 
 COPY . /app
