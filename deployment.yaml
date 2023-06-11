@@ -15,6 +15,7 @@ spec:
       containers:
       - name: semalynx-container
         image: ghcr.io/delta-whiplash/semalynx:master
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
